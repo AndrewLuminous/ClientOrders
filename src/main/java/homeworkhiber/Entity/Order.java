@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @Table(name = "order_client")
 public class Order
 {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,7 +22,7 @@ public class Order
     @Enumerated(EnumType.STRING)
     private OderStatus status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private Client client;
 

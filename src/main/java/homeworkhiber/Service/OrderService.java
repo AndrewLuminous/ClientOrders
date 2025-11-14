@@ -1,5 +1,6 @@
 package homeworkhiber.Service;
 
+import homeworkhiber.Entity.OderStatus;
 import homeworkhiber.Entity.Order;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -26,7 +27,48 @@ public class OrderService
             return order;
         });
     }
-
+    public Order updateOrder(Order order)
+    {
+        return transactionHelper.executeInTransaction(session ->
+        {
+            session.merge(order);
+            return order;
+        });
+    }
+    public List<Order> getOrdersByClientId(Long clientId) {
+        try(Session session = sessionFactory.openSession()) {
+            return session.createQuery(
+                            "SELECT DISTINCT o FROM Order o " +
+                                    "LEFT JOIN FETCH o.client c " +
+                                    "LEFT JOIN FETCH c.profile " +
+                                    "WHERE o.client.id = :clientId", Order.class)
+                    .setParameter("clientId", clientId)
+                    .list();
+        }
+    }
+    public List<Order> getOrdersByAmountRange(int minAmount, int maxAmount) {
+        try(Session session = sessionFactory.openSession()) {
+            return session.createQuery(
+                            "SELECT DISTINCT o FROM Order o " +
+                                    "LEFT JOIN FETCH o.client c " +
+                                    "LEFT JOIN FETCH c.profile " +
+                                    "WHERE o.totalAmount BETWEEN :minAmount AND :maxAmount", Order.class)
+                    .setParameter("minAmount", minAmount)
+                    .setParameter("maxAmount", maxAmount)
+                    .list();
+        }
+    }
+    public List<Order> getOrdersByStatus(OderStatus status) {
+        try(Session session = sessionFactory.openSession()) {
+            return session.createQuery(
+                            "SELECT DISTINCT o FROM Order o " +
+                                    "LEFT JOIN FETCH o.client c " +
+                                    "LEFT JOIN FETCH c.profile " +
+                                    "WHERE o.status = :status", Order.class)
+                    .setParameter("status", status)
+                    .list();
+        }
+    }
     public List<Order> getAllOrders() {
         try(Session session = sessionFactory.openSession()) {
             return session.createQuery(

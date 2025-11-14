@@ -22,7 +22,6 @@ public class ProfileCli
         String phoneNumber = scanner.nextLine();
         System.out.println("Введите ваш адресс");
         String adress = scanner.nextLine();
-        scanner.close();
         return new Profile(phoneNumber,adress, client);
 
     }

@@ -29,9 +29,10 @@ public class Client
     @OneToOne(mappedBy = "client", orphanRemoval = true)
     private Profile profile;
 
-    @OneToMany(mappedBy = "client", fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, orphanRemoval = true)
     @BatchSize(size = 100)
     private List<Order> orders = new ArrayList<>();
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     @BatchSize(size = 100)
