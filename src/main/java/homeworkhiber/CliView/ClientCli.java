@@ -17,7 +17,6 @@ public class ClientCli
 
     public Client createCLient()
     {
-        scanner.nextLine();
         System.out.println("Какое ваше имя?");
         String name = scanner.nextLine();
         System.out.println("Введите ваш email");

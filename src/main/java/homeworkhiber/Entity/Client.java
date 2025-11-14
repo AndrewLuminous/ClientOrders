@@ -34,7 +34,7 @@ public class Client
     private List<Order> orders = new ArrayList<>();
 
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @BatchSize(size = 100)
     @JoinTable(
             name = "coupons_client",

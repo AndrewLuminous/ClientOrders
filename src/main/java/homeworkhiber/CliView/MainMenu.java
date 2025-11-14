@@ -52,7 +52,7 @@ public class MainMenu
             System.out.println("5. Выбрать купоны");
             System.out.println("6. Найти заказы");
             System.out.println("7. Оплатить/отменить покупку");
-            System.out.println("7. Выход");
+            System.out.println("8. Выход");
             switch (makeChoice())
             {
                 case 1 -> createClientWithProfile();
@@ -70,14 +70,16 @@ public class MainMenu
     private void buyOrCancel()
     {
         try{
+            clientService.getAllClients().forEach(client -> {
+                System.out.printf("Клиент %s с id = %d\n",client.getName(),client.getId());
+            });
             System.out.println("Выберете клиента по id");
-            clientService.getAllClients();
             Client client = clientService.getById(scanner.nextLong());
             List<Order> orders = client.getOrders();
             System.out.println("Выберите заказ для продолжения работы");
             for (int i = 0; i < orders.size(); i++) {
                 Order order = orders.get(i);
-                System.out.printf("%d. Заказ ID:%d, Сумма:%d руб.%n",
+                System.out.printf("%d. Заказ ID:%d, Сумма:%d руб.%n \n",
                         i + 1, order.getId(), order.getTotalAmount());
             }
             Order orderChosen = orders.get(scanner.nextInt() - 1);
@@ -92,16 +94,22 @@ public class MainMenu
                     switch (makeChoice())
                     {
                         case 1 -> {
-                            Coupon coupon = client.getCoupons().getFirst();
+                            client.getCoupons().forEach(coupon1 -> {
+                                System.out.printf("Купон с номером %d имеет скидку %d его id = %d\n",
+                                        coupon1.getCode(),coupon1.getDiscount(),coupon1.getId());
+                            });
+                            System.out.println("Выберите купон для оплаты покупки");
+                             Coupon coupon = client.getCoupons().get(scanner.nextInt());
                             int totalAmountWithDiscount = orderChosen.getTotalAmount() - (orderChosen.getTotalAmount() * coupon.getDiscount() / 100);
                             System.out.printf("Клиент %s оплатит %d с" +
-                                    " помощью купона с номером %d",client.getName(),totalAmountWithDiscount,coupon.getDiscount());
+                                    " помощью купона с номером %d\nСкидка составляет = %d вместо %d \n",client.getName(),totalAmountWithDiscount,coupon.getCode(),coupon.getDiscount(), orderChosen.getTotalAmount());
                             orderChosen.setStatus(VERIFIED);
                             orderService.updateOrder(orderChosen);
                             System.out.println("Ваш заказ был успешно оплачен");
                         }
                         case 2 -> {
-                            System.out.printf("Клиент %s оплатит %d", client.getName(), orderChosen.getTotalAmount());
+                            System.out.printf("Клиент %s оплатит %d\n", client.getName(), orderChosen.getTotalAmount());
+                            orderChosen.setStatus(VERIFIED);
                             orderService.updateOrder(orderChosen);
                             System.out.println("Ваш заказ был успешно оплачен");
                         }
@@ -131,11 +139,16 @@ public class MainMenu
             {
                 case 1 -> {
                     System.out.println("Доступные клиенты:");
-                    clientService.getAllClients().forEach(System.out::println);
+                    clientService.getAllClients().forEach(client -> {
+                        System.out.printf("Клиент %s с id = %d\n",client.getName(),client.getId());
+                    });
                     System.out.println("\nВыберите клиента по id");
                     Client client = clientService.getById(scanner.nextLong());
                     System.out.println("Все заказы " + client.getName() + " с id " + client.getId());
-                    orderService.getOrdersByClientId(client.getId()).forEach(System.out::println);
+                    orderService.getOrdersByClientId(client.getId()).forEach(order ->{
+                        System.out.printf("Заказ на сумму %d с id = %d со статусом %s\n",
+                                order.getTotalAmount(),order.getId(),order.getStatus());
+                    } );
                 }
                 case 2 -> {
                     System.out.println("Выберете статус заказа:");
@@ -154,7 +167,9 @@ public class MainMenu
                         }
                     };
                     System.out.println("Все заказы со статусом = " + status);
-                    orderService.getOrdersByStatus(status).forEach(System.out::println);
+                    orderService.getOrdersByStatus(status).forEach(order ->{
+                        System.out.printf("Заказ с суммой %d имеет id = %d\n", order.getTotalAmount(), order.getId());
+                    });
                 }
                 case 3 -> {
                     System.out.println("Выберете диапозон сумм:");
@@ -163,12 +178,18 @@ public class MainMenu
                     System.out.println("Максимальное значение");
                     int orderMax = scanner.nextInt();
                     System.out.printf("Заказы в диапозоне от %d до %d\n ", orderMin, orderMax);
-                    orderService.getOrdersByAmountRange(orderMin, orderMax).forEach(System.out::println);
+                    orderService.getOrdersByAmountRange(orderMin, orderMax).forEach(order ->{
+                        System.out.printf("Заказ с суммой %d имеет id = %d и имеет статус %s\n",
+                                order.getTotalAmount(),order.getId(),order.getStatus());
+                    });
 
                 }
                 case 4 -> {
                     System.out.println("Все заказы");
-                    orderService.getAllOrders().forEach(System.out::println);
+                    orderService.getAllOrders().forEach(order -> {
+                        System.out.printf("Заказ с суммой %d имеет id = %d и имеет статус %s\n",
+                                order.getTotalAmount(),order.getId(),order.getStatus());
+                    });
                 }
             }
         }
@@ -182,17 +203,19 @@ public class MainMenu
     {
         try {
             clientService.getAllClients().forEach(client -> {
-                System.out.printf("name: %s, id: %d \t", client.getName(),client.getId());
+                        System.out.printf("name: %s, id: %d \n", client.getName(), client.getId());
+                    });
                 System.out.println("\nВыберите клиента по id");
                 Client clientChosen = clientService.getById(scanner.nextLong());
                 couponService.getAllCoupons().forEach(coupon -> {
-                    System.out.printf("number: %d discount: %d %%", coupon.getCode(),coupon.getDiscount());
+                    System.out.printf("номер: %d скидка: %d %% его id = %d \n", coupon.getCode(),coupon.getDiscount(), coupon.getId());
                 });
-                System.out.println("\nВыберите купон по id");
+                System.out.println("Выберите купон по id");
                 Coupon coupon = couponService.getById(scanner.nextLong());
                 couponService.enrollClientToCoupon(clientChosen.getId(), coupon.getId());
+                couponService.updateCoupon(coupon);
                 System.out.println("Успешно выбран купон!");
-            });
+
         }
         catch (Exception e)
         {
@@ -204,12 +227,15 @@ public class MainMenu
     {
         try{
             clientService.getAllClients().forEach(client -> {
-                System.out.printf("name: %s, id: %d \t", client.getName(),client.getId());
+                System.out.printf("name: %s, id: %d \n", client.getName(),client.getId());
             });
             System.out.println("\nВыберите клиента по id");
             Client client = clientService.getById(scanner.nextLong());
             Order order = orderCli.createOrder(client);
-            client.getOrders().add(order);
+            List<Order> x = client.getOrders();
+            x.add(order);
+            client.setOrders(x);
+            orderService.saveOrder(order);
             clientService.updateClient(client);
             System.out.println("Товар успешно сохранен");
         }
@@ -224,7 +250,7 @@ public class MainMenu
         try
         {
             clientService.getAllClients().forEach(client -> {
-                System.out.printf("name : %s id : %d \t", client.getName(), client.getId());
+                System.out.printf("name : %s id : %d \n", client.getName(), client.getId());
             });
             System.out.println("Выберите клиента по id");
             Client client = clientService.getById(scanner.nextLong());
@@ -256,11 +282,8 @@ public class MainMenu
                     }
                     case 5 -> {
                         try(Session session = sessionFactory.openSession()) {
-                            Transaction transaction = session.getTransaction();
-                            transaction.begin();
-                            clientService.updateClient(client);
-                            profileService.saveProfile(profile);
-                            transaction.commit();
+
+                            clientService.updateClientWithProfile(client, profile);
                             System.out.println("Успешно сохранено!");
                             return;
                         }
@@ -282,7 +305,7 @@ public class MainMenu
                 System.out.printf("name: %s id : %d \n", client.getName(), client.getId());
             });
             System.out.println("\nВыберите клиента по id");
-            Client deleteClient = clientService.getByIdGraph(scanner.nextLong());
+            Client deleteClient = clientService.getById(scanner.nextLong());
             clientService.deleteClient(deleteClient.getId());
         }
         catch (Exception e)
@@ -313,7 +336,9 @@ public class MainMenu
     private int makeChoice()
     {
         try {
-            return scanner.nextInt();
+            int returnChoice = scanner.nextInt();
+            scanner.nextLine();
+            return returnChoice;
         }
         catch (InputMismatchException e)
         {

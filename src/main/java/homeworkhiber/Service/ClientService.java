@@ -2,6 +2,7 @@ package homeworkhiber.Service;
 
 import homeworkhiber.Entity.Client;
 import homeworkhiber.Entity.Order;
+import homeworkhiber.Entity.Profile;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
@@ -36,6 +37,14 @@ public class ClientService
             return newClient;
         });
     }
+    public void updateClientWithProfile(Client client, Profile profile) {
+        transactionHelper.executeInTransaction(session -> {
+            Client managedClient = session.merge(client);
+            Profile managedProfile = session.merge(profile);
+            managedClient.setProfile(managedProfile);
+            managedProfile.setClient(managedClient);
+        });
+    }
     public void deleteClient(Long id)
     {
         transactionHelper.executeInTransaction(session ->
@@ -62,10 +71,12 @@ public class ClientService
 
             EntityGraph<Client> entityGraph = session.createEntityGraph(Client.class);
             entityGraph.addAttributeNodes("profile", "orders");
-            return session.createQuery("SELECT DISTINCT c FROM Client c " +
+            Client client = session.createQuery("SELECT DISTINCT c FROM Client c " +
                             "WHERE c.id = :id", Client.class)
                     .setHint("jakarta.persistence.loadgraph", entityGraph)
                     .setParameter("id", id).getSingleResult();
+            Hibernate.initialize(client.getCoupons());
+            return client;
         }
     }
     public Client updateClient(Client client)
@@ -78,13 +89,16 @@ public class ClientService
     }
     public List<Client> getAllClients() {
         try(Session session = sessionFactory.openSession()) {
-            return session.createQuery(
+            List<Client> clients = session.createQuery(
                             "SELECT DISTINCT o FROM Client o " +
                                     "LEFT JOIN FETCH o.profile "
                             + "LEFT JOIN FETCH o.orders ",
                             Client.class)
                     .list();
+            clients.forEach(client -> {
+                Hibernate.initialize(client.getOrders());
+            });
+            return clients;
         }
     }
-
 }

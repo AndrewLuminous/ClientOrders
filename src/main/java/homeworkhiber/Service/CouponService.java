@@ -31,6 +31,14 @@ public class CouponService
             return coupon;
         });
     }
+    public Coupon updateCoupon(Coupon coupon)
+    {
+        return transactionHelper.executeInTransaction(session ->
+        {
+            session.merge(coupon);
+            return coupon;
+        });
+    }
     public void enrollClientToCoupon(
             Long clientId,
             Long couponId
@@ -47,8 +55,7 @@ public class CouponService
     public List<Coupon> getAllCoupons() {
         try(Session session = sessionFactory.openSession()) {
             return session.createQuery(
-                            "SELECT DISTINCT o FROM Coupon o " +
-                                    "LEFT JOIN FETCH o.client ",
+                            "SELECT DISTINCT o FROM Coupon o ",
                             Coupon.class)
                     .list();
         }

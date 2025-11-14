@@ -21,7 +21,6 @@ public class OrderCli
     {
         System.out.println("Какова ваша сумма заказа?");
         int totalAmount = scanner.nextInt();
-        scanner.close();
         return new Order(totalAmount, client, LocalDateTime.now());
 
     }

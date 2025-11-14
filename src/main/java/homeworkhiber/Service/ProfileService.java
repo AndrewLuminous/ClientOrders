@@ -22,5 +22,12 @@ public class ProfileService
             return profile;
         });
     }
+    public Profile updateProfile(Profile profile)
+    {
+        return transactionHelper.executeInTransaction(session -> {
+            session.merge(profile);
+            return profile;
+        });
+    }
 
 }

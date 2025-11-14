@@ -20,9 +20,9 @@ public class ProfileCli
     {
         System.out.println("Какой ваш номер телефона?");
         String phoneNumber = scanner.nextLine();
-        System.out.println("Введите ваш адресс");
-        String adress = scanner.nextLine();
-        return new Profile(phoneNumber,adress, client);
+        System.out.println("Введите ваш адрес");
+        String adres = scanner.nextLine();
+        return new Profile(phoneNumber,adres, client);
 
     }
 }

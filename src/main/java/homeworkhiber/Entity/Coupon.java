@@ -20,7 +20,7 @@ public class Coupon
     @Column(name = "discount")
     private int discount;
 
-    @ManyToMany(mappedBy = "coupons", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "coupons", fetch = FetchType.LAZY)
     @BatchSize(size = 100)
     private List<Client> client;
 
