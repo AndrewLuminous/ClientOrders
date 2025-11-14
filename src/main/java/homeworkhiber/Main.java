@@ -29,6 +29,7 @@ public class Main {
         MainMenu mainMenu = context.getBean(MainMenu.class);
         Session session = sessionFactory.openSession();
         session.beginTransaction();
+
         Client client1 = new Client("Богдан", "Богдан@gmail.com", LocalDateTime.now());
         Client client2 = new Client("Василий", "Василий@gmail.com", LocalDateTime.now());
         Client client3 = new Client("Григорий", "Григорийg@mail.com", LocalDateTime.now());
