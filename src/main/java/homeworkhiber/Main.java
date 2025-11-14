@@ -128,6 +128,7 @@ public class Main {
         couponService.enrollClientToCoupon(coupon7.getId(), SavedClient7.getId());
         couponService.enrollClientToCoupon(coupon8.getId(), SavedClient8.getId());
         couponService.enrollClientToCoupon(coupon9.getId(), SavedClient9.getId());
+
         session.getTransaction().commit();
         mainMenu.show();
         session.close();
