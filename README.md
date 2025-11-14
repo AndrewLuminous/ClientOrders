@@ -16,6 +16,14 @@ ClientOrders - консольная система управления клие
 
 ## Демонстрация важных элементов моего проекта
 ### <p style="text-align: center;">N + 1</p>
+Визуализация проблемы N+1
+
+![ninactive](https://github.com/AndrewLuminous/ClientOrders/blob/main/src/images/n+1inactive.png)
+
+![dekart](https://github.com/AndrewLuminous/ClientOrders/blob/main/src/images/dekart.png)
+
+На этом скриншоте явно продемонстрирована решенная проблема декартового произведения которое не давало бы в свою очередь решить N + 1
+
 В моем проекте я избавился от N + 1 и я попробовал три способа:
 * собственные jpql запросы с `Join Fetch`
 * Порционная загрузка - `BatchSize`
@@ -23,13 +31,6 @@ ClientOrders - консольная система управления клие
 
 Решение этой задачи позволило понять глубже `hibernate` его типы загрузки `eagle`, `lazy` много других механизмов, даже удалось встретить декартово произведение.
 
-![dekart](https://github.com/AndrewLuminous/ClientOrders/blob/main/src/images/dekart.png)
-
-На этом скриншоте явно продемонстрировано проблема декартового произведения которое не дает в свою очередь решить N + 1 мы ее решили.
-
-Визуализация проблемы N+1
-
-![ninactive](https://github.com/AndrewLuminous/ClientOrders/blob/main/src/images/n+1inactive.png)
 
 N+1 проблема проявляется когда для загрузки N сущностей выполняется N+1 запросов к базе данных. Вместо эффективного JOIN, Hibernate делает отдельные SELECT'ы
 ### <p style="text-align: center;">Демонстрация работы приложения ClientsOrder</p>
